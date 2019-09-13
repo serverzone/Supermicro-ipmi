@@ -1,0 +1,48 @@
+{
+    "name": "serverzone/supermicro-ipmi",
+    "type": "library",
+    "description": "Supermicro IPMI management connector - via http",
+    "keywords": ["supermicro","ipmi"],
+    "homepage": "https://www.serverzone.cz",
+    "license": "MIT",
+    "require": {
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "require-dev": {
+        "nette/tester": "^2.3",
+        "ninjify/qa": "^0.9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ServerZone\\SupermicroIpmi\\": "src/"
+        }
+    },
+    "scripts": {
+        "ci" : "@tester",
+        "qa": [
+            "linter src tests",
+            "codesniffer src tests"
+        ],
+        "tester": "tester -s -p php --colors 1 -C tests",
+        "phpstan": "phpstan-temp/vendor/bin/phpstan analyse -l max -c phpstan.neon src",
+        "cs-fixer": "codefixer",
+        "post-install-cmd": [
+            "[ ! -d .git/hooks ] || (echo '#!/bin/bash\n\ncomposer qa' > .git/hooks/pre-commit && chmod a+x .git/hooks/pre-commit)"
+        ],
+        "phpstan-install": [
+            "mkdir -p phpstan-temp",
+            "composer require -d phpstan-temp phpstan/phpstan:^0.11",
+            "composer require -d phpstan-temp phpstan/phpstan-deprecation-rules:^0.11",
+            "composer require -d phpstan-temp phpstan/phpstan-strict-rules:^0.11"
+        ]
+    },
+    "scripts-descriptions": {
+        "ci": "Run full testing",
+        "qa": "Check code quality",
+        "tester": "Run tester",
+        "cs-fixer": "Run code standard fixer",
+        "phpstan": "Run PHP Static Analysis Tool (phpstan)",
+        "post-install-cmd": "Install git commit hook",
+        "phpstan-install": "Install phpstan utility"
+    }
+}
