@@ -143,6 +143,34 @@ abstract class Skeleton extends Tester\TestCase
 
     abstract protected function validatePowerConsumption();
 
+    /**
+     * User list test
+     *
+     */
+
+    abstract protected function setupUserList(SMClient $instance): array;
+
+    public function testUserList()
+    {
+        $value = $this->setupUserList($this->instance);
+
+        Assert::same($value, $this->instance->getUsers());
+    }
+
+    /**
+     * User create test
+     *
+     */
+
+    abstract protected function setupUserCreate(SMClient $instance): void;
+
+    public function getUserCreate()
+    {
+        $value = $this->setupUserCreate($this->instance);
+
+        Assert::true($this->instance->userCreate(2, 'monitoring', 'Super*Secret', 2));
+    }
+
     /** Support methods */
 
     protected function createMockClient($responses = [])

@@ -126,6 +126,41 @@ class Test extends Tests\Skeleton
     {
         Assert::same(2, count($this->history));
     }
+
+    /**
+     * Setup user list test.
+     *
+     * @param SMClient $instance SMClient instance
+     * @return array
+     */
+    protected function setupUserList(SMClient $instance): array
+    {
+        $responses = [
+            new Response(200, [], file_get_contents(__DIR__ . '/userList.valid.html'))
+        ];
+
+        $instance->setHttpClient($this->createMockClient($responses));
+
+        return [
+            [ 'id' => 0, 'name' => '                ', 'access' => '00' ],
+            [ 'id' => 1, 'name' => 'ADMIN', 'access' => '04' ],
+            [ 'id' => 2, 'name' => 'zabbix', 'access' => '03' ],
+        ];
+    }
+
+    /**
+     * Setup user create test
+     *
+     * @param SMCLient $instance SMCLient instance
+     */
+    protected function setupUserCreate(SMClient $instance): void
+    {
+        $responses = [
+            new Response(200, [], 'ok')
+        ];
+
+        $instance->setHttpClient($this->createMockClient($responses));
+    }
 }
 
 (new Test)->run();

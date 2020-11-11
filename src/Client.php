@@ -216,7 +216,7 @@ class Client implements IClient
         $this->guzzle = new \GuzzleHttp\Client([
             'cookies' => $jar,
             'verify' => false,
-            //            'debug' => true
+            // 'debug' => true
         ]);
     }
 
@@ -267,7 +267,6 @@ class Client implements IClient
     private function ipmiRequest(array $params = [])
     {
         $response = $this->guzzle->request('POST', $this->getUri('/cgi/ipmi.cgi'), ['form_params' => $params]);
-
         // var_dump((string) $response->getBody());
 
         $xml = @simplexml_load_string((string) $response->getBody());
@@ -300,5 +299,75 @@ class Client implements IClient
         }
 
         throw new \UnexpectedValueException('Unable to fetch power status.');
+    }
+
+    /**
+     * Return list of IPMI users
+     *
+     */
+    public function getUsers()
+    {
+        $this->login();
+        $response = $this->ipmiRequest([
+            // Old style
+            'CONFIG_INFO.XML' => sprintf('(%d,%d)', 0, 0),
+            'time_stamp' => $this->getCurrentTimeStamp(),
+            '_' => '',
+
+            // New style
+            'op' => 'CONFIG_INFO.XML',
+            'r' => '(0,0)',
+        ]);
+        $users = [];
+        foreach ($response->CONFIG_INFO->USER as $row) {
+            $username = (string) $row['NAME'];
+            if ($username == '') {
+                continue;
+            }
+            $users[] = [
+                'id' => count($users),
+                'name' => $username,
+                'access' => (string) $row['USER_ACCESS'],
+            ];
+        }
+        return $users;
+    }
+
+    /**
+     * Creat or update IPMI user
+     *
+     * @param string $originalUSername Slot number - in default Anonymous is 0, ADMIN is 1, first empty slot is 2
+     * @param string $username Username
+     * @param string $password Password
+     * @param string $privilege Level of privilege - 2: User, 3: Operator, 4: Administrator
+     * @return bool True on success, exception on failure
+     */
+    public function createUser($originalUsername, $username, $password, $privilege)
+    {
+        $this->login();
+
+        // X9 version
+        $params = [
+            'username' => $username,
+            'original_username' => $originalUsername,
+            'password' => $password,
+            'new_privilege' => $privilege,
+        ];
+        try {
+            $response = $this->guzzle->request('POST', $this->getUri('/cgi/config_user.cgi'), ['form_params' => $params]);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            if ($e->getCode() != 404) {
+                throw $e;
+            }
+
+            // X10 version
+            $params['op'] = 'config_user';
+            $response = $this->guzzle->request('POST', $this->getUri('/cgi/op.cgi'), ['form_params' => $params]);
+        }
+
+        if (trim((string) $response->getBody()) == 'ok') {
+            return true;
+        }
+        throw new \UnexpectedValueException('Unable to create user.');
     }
 }
