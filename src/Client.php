@@ -360,7 +360,7 @@ class Client implements IClient
                 throw $e;
             }
 
-            // X10 version
+            // X11 version
             $params['op'] = 'config_user';
             $response = $this->guzzle->request('POST', $this->getUri('/cgi/op.cgi'), ['form_params' => $params]);
         }
