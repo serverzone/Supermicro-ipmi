@@ -38,7 +38,7 @@ var_dump($instance->getPowerStatus());
 ### Power consumption reading
 
 ```php
-var_dump($i->getPowerConsumption());
+var_dump($instance->getPowerConsumption());
 ```
 
 ### Power on
