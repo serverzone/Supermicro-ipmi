@@ -26,6 +26,9 @@ class Client implements IClient
     /** @var boolean Loged in flag */
     protected $logedIn = false;
 
+    /** @var array Requsts headers */
+    protected $headers = [];
+
     /** @var \GuzzleHttp\Client */
     protected $guzzle;
 
@@ -67,6 +70,15 @@ class Client implements IClient
 
         if (strpos($body, 'mainmenu') === false) {
             throw new UnauthorizedException();
+        }
+
+        // Some newer versions have CSRF protection
+        $result = $this->guzzle->request('GET', $this->getUri('/cgi/url_redirect.cgi?url_name=topmenu'));
+        $body = (string) $result->getBody();
+        preg_match('|\"CSRF_TOKEN\", \"([^"]+)|', $body, $token);
+        if (isset($token[1])) {
+            $this->headers['CSRF_TOKEN'] = $token[1];
+            $this->headers['Referer'] = $this->getUri('/');
         }
 
         $this->logedIn = true;
@@ -266,7 +278,10 @@ class Client implements IClient
      */
     private function ipmiRequest(array $params = [])
     {
-        $response = $this->guzzle->request('POST', $this->getUri('/cgi/ipmi.cgi'), ['form_params' => $params]);
+        $response = $this->guzzle->request('POST', $this->getUri('/cgi/ipmi.cgi'), [
+            'form_params' => $params,
+            'headers' => $this->headers,
+        ]);
         // var_dump((string) $response->getBody());
 
         $xml = @simplexml_load_string((string) $response->getBody());
@@ -354,7 +369,10 @@ class Client implements IClient
             'new_privilege' => $privilege,
         ];
         try {
-            $response = $this->guzzle->request('POST', $this->getUri('/cgi/config_user.cgi'), ['form_params' => $params]);
+            $response = $this->guzzle->request('POST', $this->getUri('/cgi/config_user.cgi'), [
+                'form_params' => $params,
+                'headers' => $this->headers,
+            ]);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             if ($e->getCode() != 404) {
                 throw $e;
@@ -362,7 +380,10 @@ class Client implements IClient
 
             // X11 version
             $params['op'] = 'config_user';
-            $response = $this->guzzle->request('POST', $this->getUri('/cgi/op.cgi'), ['form_params' => $params]);
+            $response = $this->guzzle->request('POST', $this->getUri('/cgi/op.cgi'), [
+                'form_params' => $params,
+                'headers' => $this->headers,
+            ]);
         }
 
         if (trim((string) $response->getBody()) == 'ok') {

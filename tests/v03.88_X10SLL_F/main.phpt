@@ -29,7 +29,7 @@ class Test extends Tests\Skeleton
         ];
 
         $responses = [
-            new Response(301), // Https redirect here
+            new Response(200), // No redirect here
             new Response(200, $headers, file_get_contents(__DIR__ . '/login.valid.html')),
             new Response(200, $headers, file_get_contents(__DIR__ . '/login.valid-topmenu.html')),
         ];
@@ -40,7 +40,7 @@ class Test extends Tests\Skeleton
     protected function setupInvalidLogin(SMClient $instance)
     {
         $responses = [
-            new Response(301), // Https redirect here
+            new Response(200), // No redirect here
             new Response(200, [], file_get_contents(__DIR__ . '/login.invalid.html'))
         ];
 
@@ -55,9 +55,7 @@ class Test extends Tests\Skeleton
     protected function setupPowerStatus(SMClient $instance)
     {
         $responses = [
-            // new Response(200, [], file_get_contents(__DIR__ . '/powerStatus.invalid.html')),
             new Response(200, [], file_get_contents(__DIR__ . '/powerStatus.on.html')),
-            // new Response(200, [], file_get_contents(__DIR__ . '/powerStatus.invalid.html')),
             new Response(200, [], file_get_contents(__DIR__ . '/powerStatus.off.html')),
         ];
 
@@ -117,17 +115,18 @@ class Test extends Tests\Skeleton
     protected function setupPowerConsumption(SMClient $instance): int
     {
         $responses = [
-            new Response(200, [], file_get_contents(__DIR__ . '/powerConsumption.valid.html'))
+            new Response(200, [], file_get_contents(__DIR__ . '/powerConsumption.empty1.html')),
+            new Response(200, [], file_get_contents(__DIR__ . '/powerConsumption.empty2.html')),
         ];
 
         $instance->setHttpClient($this->createMockClient($responses));
 
-        return 133;
+        return 0;
     }
 
     protected function validatePowerConsumption()
     {
-        Assert::same(1, count($this->history));
+        Assert::same(2, count($this->history));
     }
 
     /**

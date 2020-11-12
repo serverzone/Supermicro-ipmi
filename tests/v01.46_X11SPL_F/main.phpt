@@ -31,6 +31,7 @@ class Test extends Tests\Skeleton
         $responses = [
             new Response(301), // Https redirect here
             new Response(200, $headers, file_get_contents(__DIR__ . '/login.valid.html')),
+            new Response(200, $headers, file_get_contents(__DIR__ . '/login.valid-topmenu.html')),
         ];
 
         $instance->setHttpClient($this->createMockClient($responses));
