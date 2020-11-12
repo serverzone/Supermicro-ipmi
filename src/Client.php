@@ -151,8 +151,6 @@ class Client implements IClient
             // '_' => ''
         ]);
 
-        // var_dump($data);
-
         $result = [];
         if ($data === null) {
             return $result;
@@ -306,7 +304,9 @@ class Client implements IClient
             // New style
             'op' => 'POWER_INFO.XML',
             'r' => sprintf('(%d,%d)', $param1, $param2),
-            // '_' => ''
+
+            // X10SLL-F @03.88
+            'GET_POWER_INFO.XML' => sprintf('(%d,%d)', $param1, $param2),
         ]);
 
         if ($response !== null && isset($response->POWER_INFO->POWER['STATUS'])) {
