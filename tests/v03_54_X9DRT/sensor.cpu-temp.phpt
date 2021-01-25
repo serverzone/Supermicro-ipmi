@@ -35,7 +35,7 @@ Assert::same(70, $sensor->getLimit('UC'));
 Assert::same(72, $sensor->getLimit('UNR'));
 Assert::same(0, $sensor->getstatus());
 
-// Turned off
+// Powered off
 
 $sensor = '<SENSOR ID="001" NUMBER="01" NAME="CPU1 Temp" READING="000000" OPTION="00" UNR="64" UC="62" UNC="5f" LNC="00" LC="00" LNR="00" STYPE="01" RTYPE="01" ERTYPE="01" UNIT1="80" UNIT="01" L="00" M="0100" B="0000" RB="00"/>';
 $sensor = new Sensor(parseXmlNodeAttributes($sensor));

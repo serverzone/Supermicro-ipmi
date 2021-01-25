@@ -8,7 +8,7 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-// OK Power supply
+// OK FAN
 
 $sensor = '<SENSOR ID="00e" NUMBER="41" NAME="FAN1" READING="4bc000" OPTION="c0" UNR="ff" UC="fe" UNC="fd" LNC="08" LC="06" LNR="04" STYPE="04" RTYPE="01" ERTYPE="01" UNIT1="00" UNIT="12" L="00" M="4b00" B="0000" RB="00"/>';
 $sensor = new Sensor(parseXmlNodeAttributes($sensor));
