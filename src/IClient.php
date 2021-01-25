@@ -48,6 +48,19 @@ interface IClient
     */
 
     /**
+     * Returns overall status of the system
+     *
+     * Values:
+     *  - 0: OK (or not available)
+     *  - 1: Warning
+     *  - 2: Critical
+     *  - 3: Unknown
+     *
+     * @return int
+     */
+    public function getOverallStatus(): int;
+
+    /**
      * Returns power consumption
      *
      */

@@ -166,6 +166,19 @@ class Client implements IClient
         return $result;
     }
 
+    public function getOverallStatus(): int
+    {
+        $status = 0;
+
+        foreach ($this->getSensors() as $row) {
+            if ($row->getStatus() > $status) {
+                $status = $row->getStatus();
+            }
+        }
+
+        return $status;
+    }
+
     /**
      * Returns Power status
      */
