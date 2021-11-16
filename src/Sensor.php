@@ -190,9 +190,8 @@ class Sensor
         $reading = $this->source['READING'];
 
         $raw = substr($reading, 0, 2);
-        $sensorD = substr($reading, 2, 2);
-        $sensorDMSB = substr($reading, 4, 2);
-
+        $sensorD = intval(substr($reading, 2, 2), 16);
+        $sensorDMSB = intval(substr($reading, 4, 2), 16);
 
         // Linda modified for cpu temp reading
         if (($raw == 0 && $this->getType() != 'c0') && $sensorD == 0 && $sensorDMSB == 0 && $this->getType() != '05') {

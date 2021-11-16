@@ -80,21 +80,23 @@ class Utils
         }
 
         if ($type == "08") {
-            if (($value % 2 !== 0) && ($value / 2 % 2 !== 0)) {
+            if (! ($value % 2) && ! ($value / 2 % 2)) {
                 return 0; // Not present / Not supported
             }
 
-            if ($value % 2 !== 0) {
-                return 0; // Presence detected
-            }
+            // if ($value %2 == 0) // Default value: presence detected
+            $result = 0;
 
-            // Power Supply Failure detected.
-            // Predictuve Failure.
-            // Power Supply input lost (AC/DC).
-            // Power Supply input lost or out-of-range.
-            // Power Supply input out-of-range, but present.
-            // Configuration error.
-            return 2;
+            if (($value / 2 % 2) ||  // Power Supply Failure detected.
+                ($value / 4 % 2) ||  // Predictuve Failure.
+                ($value / 8 % 2) ||  // Power Supply input lost (AC/DC).
+                ($value / 16 % 2) || // Power Supply input lost or out-of-range.
+                ($value / 32 % 2) || // Power Supply input out-of-range, but present.
+                ($value / 64 % 2) // Configuration error.
+            ) {
+                $result = 2;
+            }
+            return $result;
         }
 
         /* Tony, 10/23/2012 add battery backup power { */
